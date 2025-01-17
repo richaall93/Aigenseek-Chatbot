@@ -1,34 +1,34 @@
-const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Your deployed backend URL
+const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Deployed backend URL
 
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
 
-// Function to display a message
+// Function to display messages
 function addMessage(content, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender);
 
-    // Check if the content contains HTML (like a hyperlink)
+    // Check for hyperlinks in content
     if (content.includes('<a ')) {
-        messageDiv.innerHTML = content; // Render HTML as it is
+        messageDiv.innerHTML = content; // Render hyperlinks as HTML
     } else {
-        messageDiv.textContent = content; // Render plain text
+        messageDiv.textContent = content;
     }
 
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// Function to display choices (buttons)
+// Function to display choice buttons
 function addChoices(choices) {
     const choicesDiv = document.createElement('div');
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
         const button = document.createElement('button');
-        button.textContent = choice.payload.label; // Use label for button text
-        button.addEventListener('click', () => sendMessage(choice)); // Send the choice object
+        button.textContent = choice.payload.label; // Button label
+        button.addEventListener('click', () => sendMessage(choice)); // Send choice payload
         choicesDiv.appendChild(button);
     });
 
@@ -36,40 +36,33 @@ function addChoices(choices) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// Function to send a message to the backend
+// Function to send messages to the backend
 async function sendMessage(requestPayload = null) {
-    const userMessage = requestPayload
-        ? requestPayload.payload.label
-        : userInput.value.trim();
+    const userMessage = requestPayload ? requestPayload.payload.label : userInput.value.trim();
 
     if (!userMessage && !requestPayload) return;
 
-    // Add user's message to the chat (for text input)
     if (!requestPayload) {
-        addMessage(userMessage, 'user');
-        userInput.value = ''; // Clear input
+        addMessage(userMessage, 'user'); // Display user message
+        userInput.value = ''; // Clear input field
     }
 
     try {
-        const payload = {
-            userId: localStorage.getItem('userId') || crypto.randomUUID(),
-            message: userMessage,
-            request: requestPayload, // Send the full request payload for choices
-        };
-
-        console.log('Sending payload:', payload);
+        console.log('Sending payload:', requestPayload || { message: userMessage });
 
         const response = await fetch(`${BACKEND_URL}/voiceflow-interact`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+                userId: localStorage.getItem('userId') || crypto.randomUUID(),
+                message: userMessage,
+                request: requestPayload,
+            }),
         });
 
         const data = await response.json();
-
         console.log('API Response:', data);
 
-        // Display the bot responses
         data.forEach((responseItem) => {
             if (responseItem.type === 'text') {
                 addMessage(responseItem.payload.message, 'bot');
@@ -83,13 +76,13 @@ async function sendMessage(requestPayload = null) {
     }
 }
 
-// Fetch the initial greeting on page load
+// Initialize chatbot on page load
 window.onload = async () => {
     console.log('Sending initial launch request...');
     await sendMessage({ payload: { label: 'launch' }, type: 'launch' });
 };
 
-// Event listeners for sending a message
+// Event listeners
 sendButton.addEventListener('click', () => sendMessage());
 userInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') sendMessage();
