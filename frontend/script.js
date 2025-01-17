@@ -28,22 +28,16 @@ function addChoices(choices) {
     choices.forEach((choice) => {
         const button = document.createElement('button');
         button.textContent = choice.name;
+
+        // Log the button payload for debugging
+        console.log('Button Payload:', choice.request);
+
         button.addEventListener('click', () => sendMessage(choice.request)); // Send the choice payload
         choicesDiv.appendChild(button);
     });
 
     messagesContainer.appendChild(choicesDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-// Function to validate if a string is a URL
-function isValidURL(string) {
-    try {
-        const url = new URL(string);
-        return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch (_) {
-        return false;
-    }
 }
 
 // Function to send a message to the backend
@@ -59,7 +53,14 @@ async function sendMessage(requestPayload = null) {
     }
 
     try {
-        const response = await fetch(`${BACKEND_URL}/voiceflow-interact`, { // Updated to include route
+        // Log the payload being sent to the backend
+        console.log('Request Payload:', {
+            userId: localStorage.getItem('userId') || crypto.randomUUID(),
+            message: userMessage,
+            request: requestPayload,
+        });
+
+        const response = await fetch(`${BACKEND_URL}/voiceflow-interact`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,6 +73,9 @@ async function sendMessage(requestPayload = null) {
         });
 
         const data = await response.json();
+
+        // Log the API response for debugging
+        console.log('API Response:', data);
 
         // Display the bot responses
         data.forEach((responseItem) => {
@@ -89,6 +93,7 @@ async function sendMessage(requestPayload = null) {
 
 // Fetch the initial greeting on page load
 window.onload = async () => {
+    console.log('Sending initial launch request...');
     await sendMessage({ payload: { label: 'launch' }, type: 'launch' });
 };
 
