@@ -1,0 +1,330 @@
+/* General Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #6a0572, #1e024e); /* Modern gradient purple */
+    color: white;
+    perspective: 1000px;
+}
+
+/* Main Container */
+.main-container {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+}
+
+/* Logo Styles */
+.logo {
+    width: 100px; /* Adjust the size of the logo */
+    margin-bottom: 10px; /* Spacing below the logo */
+    border-radius: 50%; /* Make it circular */
+    border: 2px solid white; /* Optional: Add a border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Optional: Add a shadow */
+    animation: spin-coin 5s infinite ease-in-out, glow 2s infinite alternate; /* Apply vertical spin animation */
+    transform-origin: center; /* Spin around the center */
+    perspective: 1000px; /* Add perspective for 3D effect */
+}
+
+/* Keyframes for vertical coin spin */
+@keyframes spin-coin {
+    0% {
+        transform: rotateY(0deg); /* Initial state */
+    }
+    50% {
+        transform: rotateY(180deg); /* Half rotation (back side visible) */
+    }
+    100% {
+        transform: rotateY(360deg); /* Full rotation (front side visible) */
+    }
+}
+
+
+/* Main Heading (Aigenseek) */
+.main-heading {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Sub Heading (Let's chat!) */
+.sub-heading {
+    font-size: 1.5rem;
+    margin: 10px 0 20px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Chat Container with Glow Effect */
+.chat-container {
+    width: 100%;
+    max-width: 400px;
+    height: 600px;
+    background: #c27edb; /* Light purple background for chat box */
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(194, 126, 219, 0.5); /* Initial soft glow */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0 auto;
+    position: relative; /* For adding animations */
+    animation: glow 2s infinite alternate; /* Apply glowing animation */
+}
+
+/* Glowing Animation */
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 10px rgba(194, 126, 219, 0.4), 0 0 20px rgba(194, 126, 219, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(194, 126, 219, 0.6), 0 0 50px rgba(194, 126, 219, 0.5);
+    }
+}
+
+/* Messages Area */
+.messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #d8a8e8; /* Slightly lighter purple for message area */
+    border-bottom: 2px solid #b36ab7;
+}
+
+/* Individual Messages */
+.message {
+    padding: 12px 15px;
+    border-radius: 20px;
+    max-width: 75%;
+    word-wrap: break-word;
+    line-height: 1.5;
+}
+
+/* User Messages */
+.message.user {
+    background: #7b47b6; /* Purple for user messages */
+    color: white;
+    align-self: flex-end;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Bot Messages */
+.message.bot {
+    background: #e8c1fc; /* Light lavender for bot messages */
+    color: black;
+    align-self: flex-start;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for the container holding the buttons */
+.choices {
+    display: flex;
+    flex-wrap: wrap; /* Allows buttons to wrap to the next line if needed */
+    gap: 15px; /* Adds space between buttons */
+    justify-content: center; /* Centers the buttons horizontally */
+    margin-top: 15px; /* Adds space between the choices and the message above */
+}
+
+/* Style for the individual buttons */
+.choices button {
+    padding: 10px 20px; /* Adjusts the size of the buttons */
+    border: none;
+    border-radius: 20px; /* Makes the buttons more rounded */
+    background-color: #6a47d5; /* Adjust button color */
+    color: white;
+    font-size: 16px; /* Adjusts text size */
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.choices button:hover {
+    background-color: #5435a9; /* Slightly darker shade on hover */
+    transform: scale(1.05); /* Slightly enlarges the button on hover */
+}
+
+.choice-button {
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.choice-button a {
+    text-decoration: none;
+    color: inherit; /* Inherit button text color */
+}
+
+.choice-button:hover {
+    background-color: #5045ff;
+}
+
+.choice-button a:hover {
+    text-decoration: underline; /* Optional hover effect for links */
+}
+
+/* Input Area */
+.input-container {
+    display: flex;
+    padding: 10px;
+    background: #c27edb; /* Matches chat box background */
+    border-top: 2px solid #b36ab7;
+}
+
+/* Input Field */
+input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 25px;
+    border: 1px solid #b36ab7;
+    background: #d8a8e8;
+    color: black;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+/* Input Field Focus */
+input:focus {
+    border-color: #7b47b6; /* Matches user message color */
+}
+/* Particles Container */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Behind everything */
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.6), transparent);
+}
+
+/* Particles Container */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Behind everything */
+    pointer-events: none; /* Prevent interaction with particles */
+}
+
+/* Generate Multiple Particles */
+.particles::before,
+.particles::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    animation: particleMove 6s infinite ease-in-out;
+}
+
+/* Add More Particles */
+.particles::before {
+    left: 10%;
+    top: 20%;
+    animation-duration: 4s;
+    animation-delay: 0s;
+}
+
+.particles::after {
+    left: 70%;
+    top: 40%;
+    animation-duration: 5s;
+    animation-delay: 2s;
+}
+
+/* Particles Container */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Behind everything */
+    pointer-events: none; /* Prevent interaction with particles */
+}
+
+/* Individual Particle Style */
+.particle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    animation: move 5s linear infinite;
+}
+
+/* Particle Movement Keyframes */
+@keyframes move {
+    from {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translate(calc(200vw * var(--dx)), calc(200vh * var(--dy))) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Send Button */
+button {
+    background: #7b47b6; /* Matches user message color */
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    margin-left: 10px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+
+/* Send Button Hover */
+button:hover {
+    background: #5a3189; /* Slightly darker purple on hover */
+}
+
+/* Send Button Active */
+button:active {
+    transform: scale(0.95); /* Slight button press effect */
+}
+
+/* Scrollbar Customization */
+.messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.messages::-webkit-scrollbar-track {
+    background: #d8a8e8;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background: #7b47b6;
+    border-radius: 4px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Change this to your desired hover color */
+    cursor: pointer; /* Optional: Adds a pointer cursor */
+}
