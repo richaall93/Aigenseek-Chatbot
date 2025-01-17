@@ -27,12 +27,8 @@ function addChoices(choices) {
 
     choices.forEach((choice) => {
         const button = document.createElement('button');
-        button.textContent = choice.name;
-
-        // Log the button payload for debugging
-        console.log('Button Payload:', choice.request);
-
-        button.addEventListener('click', () => sendMessage(choice.request)); // Send the choice payload
+        button.textContent = choice.payload.label; // Use label for button text
+        button.addEventListener('click', () => sendMessage(choice)); // Send the choice object
         choicesDiv.appendChild(button);
     });
 
@@ -42,39 +38,35 @@ function addChoices(choices) {
 
 // Function to send a message to the backend
 async function sendMessage(requestPayload = null) {
-    const userMessage = requestPayload ? requestPayload.payload.label : userInput.value.trim();
+    const userMessage = requestPayload
+        ? requestPayload.payload.label
+        : userInput.value.trim();
 
     if (!userMessage && !requestPayload) return;
 
+    // Add user's message to the chat (for text input)
     if (!requestPayload) {
-        // Display user message in chat
         addMessage(userMessage, 'user');
         userInput.value = ''; // Clear input
     }
 
     try {
-        // Log the payload being sent to the backend
-        console.log('Request Payload:', {
+        const payload = {
             userId: localStorage.getItem('userId') || crypto.randomUUID(),
             message: userMessage,
-            request: requestPayload,
-        });
+            request: requestPayload, // Send the full request payload for choices
+        };
+
+        console.log('Sending payload:', payload);
 
         const response = await fetch(`${BACKEND_URL}/voiceflow-interact`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userId: localStorage.getItem('userId') || crypto.randomUUID(),
-                message: userMessage,
-                request: requestPayload, // Send the full request payload for choices
-            }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
         });
 
         const data = await response.json();
 
-        // Log the API response for debugging
         console.log('API Response:', data);
 
         // Display the bot responses
