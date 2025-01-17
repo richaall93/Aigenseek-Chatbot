@@ -1,4 +1,4 @@
-const BACKEND_URL = 'https://aigenseek-chat-backend.vercel.app/'; // Replace with your deployed backend URL
+const BACKEND_URL = 'https://backend-self-five-57.vercel.app/voiceflow-interact'; // Replace with your deployed backend URL
 
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
