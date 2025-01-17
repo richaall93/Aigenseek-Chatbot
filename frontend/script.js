@@ -1,4 +1,4 @@
-const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Replace with your deployed backend URL
+const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Your deployed backend URL
 
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
@@ -19,7 +19,6 @@ function addMessage(content, sender) {
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
-
 
 // Function to display choices (buttons)
 function addChoices(choices) {
@@ -60,7 +59,7 @@ async function sendMessage(requestPayload = null) {
     }
 
     try {
-        const response = await fetch(BACKEND_URL, {
+        const response = await fetch(`${BACKEND_URL}/voiceflow-interact`, { // Updated to include route
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
