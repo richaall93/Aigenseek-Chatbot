@@ -60,6 +60,10 @@ async function sendMessage(requestPayload = null) {
             }),
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const data = await response.json();
         console.log('API Response:', data);
 
@@ -88,10 +92,7 @@ userInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') sendMessage();
 });
 
-// -------------------------------------------
 // Particle Code: Create a Universe-like Effect
-// -------------------------------------------
-
 const particlesContainer = document.querySelector('.particles');
 
 // Function to generate random particles
