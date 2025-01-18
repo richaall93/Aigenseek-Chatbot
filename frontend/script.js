@@ -26,13 +26,16 @@ function addChoices(choices) {
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
-        if (!choice.payload || !choice.payload.label) {
+        // Dynamically handle structure: prioritize `payload.label`, fallback to `name`
+        const label = choice.payload?.label || choice.name;
+
+        if (!label) {
             console.error('Invalid choice structure:', choice);
-            return;
+            return; // Skip invalid choice
         }
 
         const button = document.createElement('button');
-        button.textContent = choice.payload.label; // Button label
+        button.textContent = label; // Button label
         button.addEventListener('click', () => sendMessage(choice)); // Send choice payload
         choicesDiv.appendChild(button);
     });
