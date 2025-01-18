@@ -26,6 +26,11 @@ function addChoices(choices) {
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
+        if (!choice.payload || !choice.payload.label) {
+            console.error('Invalid choice structure:', choice);
+            return;
+        }
+
         const button = document.createElement('button');
         button.textContent = choice.payload.label; // Button label
         button.addEventListener('click', () => sendMessage(choice)); // Send choice payload
@@ -72,6 +77,8 @@ async function sendMessage(requestPayload = null) {
                 addMessage(responseItem.payload.message, 'bot');
             } else if (responseItem.type === 'choice') {
                 addChoices(responseItem.payload.buttons);
+            } else {
+                console.warn('Unhandled response type:', responseItem.type);
             }
         });
     } catch (error) {
