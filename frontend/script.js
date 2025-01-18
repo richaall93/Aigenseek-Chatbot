@@ -9,7 +9,6 @@ function addMessage(content, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender);
 
-    // Check for hyperlinks in content
     if (content.includes('<a ')) {
         messageDiv.innerHTML = content; // Render hyperlinks as HTML
     } else {
@@ -26,17 +25,15 @@ function addChoices(choices) {
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
-        // Dynamically handle structure: prioritize `payload.label`, fallback to `name`
         const label = choice.payload?.label || choice.name;
-
         if (!label) {
             console.error('Invalid choice structure:', choice);
-            return; // Skip invalid choice
+            return;
         }
 
         const button = document.createElement('button');
-        button.textContent = label; // Button label
-        button.addEventListener('click', () => sendMessage(choice)); // Send choice payload
+        button.textContent = label;
+        button.addEventListener('click', () => sendMessage(choice)); // Pass choice as payload
         choicesDiv.appendChild(button);
     });
 
@@ -51,13 +48,11 @@ async function sendMessage(requestPayload = null) {
     if (!userMessage && !requestPayload) return;
 
     if (!requestPayload) {
-        addMessage(userMessage, 'user'); // Display user message
+        addMessage(userMessage, 'user');
         userInput.value = ''; // Clear input field
     }
 
     try {
-        console.log('Sending payload:', requestPayload || { message: userMessage });
-
         const response = await fetch(`${BACKEND_URL}/voiceflow-interact`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -74,6 +69,10 @@ async function sendMessage(requestPayload = null) {
 
         const data = await response.json();
         console.log('API Response:', data);
+
+        // Clear existing choices to avoid duplicates
+        const existingChoices = document.querySelector('.choices');
+        if (existingChoices) existingChoices.remove();
 
         data.forEach((responseItem) => {
             if (responseItem.type === 'text') {
@@ -92,7 +91,6 @@ async function sendMessage(requestPayload = null) {
 
 // Initialize chatbot on page load
 window.onload = async () => {
-    console.log('Sending initial launch request...');
     await sendMessage({ payload: { label: 'launch' }, type: 'launch' });
 };
 
@@ -101,37 +99,3 @@ sendButton.addEventListener('click', () => sendMessage());
 userInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') sendMessage();
 });
-
-// Particle Code: Create a Universe-like Effect
-const particlesContainer = document.querySelector('.particles');
-
-// Function to generate random particles
-function createParticles(count) {
-    for (let i = 0; i < count; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-
-        // Randomize starting position, size, speed, and direction
-        const size = Math.random() * 5 + 3; // Particle size: 3px to 8px
-        const left = Math.random() * 100; // Random position on X-axis
-        const top = Math.random() * 100; // Random position on Y-axis
-        const duration = Math.random() * 20 + 15; // Animation duration: 15s to 35s
-        const dx = Math.random() * 2 - 1; // Random horizontal direction
-        const dy = Math.random() * 2 - 1; // Random vertical direction
-
-        // Apply styles
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.left = `${left}vw`;
-        particle.style.top = `${top}vh`;
-        particle.style.animationDuration = `${duration}s`;
-        particle.style.setProperty('--dx', dx);
-        particle.style.setProperty('--dy', dy);
-
-        // Add particle to container
-        particlesContainer.appendChild(particle);
-    }
-}
-
-// Generate 100 particles
-createParticles(100);
