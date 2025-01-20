@@ -3,15 +3,15 @@ const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Replace with y
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
+const particlesContainer = document.querySelector('.particles'); // Ensure this exists in your HTML
 
 // Function to display messages
 function addMessage(content, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender);
 
-    // Render hyperlinks if they exist
     if (content.includes('<a ')) {
-        messageDiv.innerHTML = content;
+        messageDiv.innerHTML = content; // Render hyperlinks as HTML
     } else {
         messageDiv.textContent = content;
     }
@@ -26,7 +26,7 @@ function addChoices(choices) {
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
-        const label = choice.payload?.label || choice.name; // Dynamically handle label/name
+        const label = choice.payload?.label || choice.name; // Handle label/name
         if (!label) {
             console.error('Invalid choice structure:', choice);
             return;
@@ -104,7 +104,7 @@ userInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') sendMessage();
 });
 
-// Function to generate random particles
+// Particle Effects: Create a Universe-like Effect
 function createParticles(count) {
     for (let i = 0; i < count; i++) {
         const particle = document.createElement('div');
@@ -133,4 +133,6 @@ function createParticles(count) {
 }
 
 // Generate 100 particles
-createParticles(100);
+if (particlesContainer) {
+    createParticles(100);
+}
