@@ -1,15 +1,15 @@
-const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Your backend URL
+const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Backend URL
 
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
 
-// Function to display messages
+// Function to add a message to the chat
 function addMessage(content, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender);
     if (content.includes('<a ')) {
-        messageDiv.innerHTML = content; // Render hyperlinks as HTML
+        messageDiv.innerHTML = content; // Hyperlinks are rendered as HTML
     } else {
         messageDiv.textContent = content;
     }
@@ -17,33 +17,35 @@ function addMessage(content, sender) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// Function to display choice buttons
+// Function to display choices as buttons
 function addChoices(choices) {
     const choicesDiv = document.createElement('div');
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
-        const button = document.createElement('button');
-        button.textContent = choice.payload.label; // Button label
-        button.addEventListener('click', () => {
-            sendMessage(choice);
-        }); // Send choice payload
-        choicesDiv.appendChild(button);
+        if (choice.payload && choice.payload.label) {
+            const button = document.createElement('button');
+            button.textContent = choice.payload.label; // Set button label
+            button.addEventListener('click', () => {
+                sendMessage(choice);
+            });
+            choicesDiv.appendChild(button);
+        }
     });
 
     messagesContainer.appendChild(choicesDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// Function to send messages to the backend
+// Function to send a message to the backend
 async function sendMessage(requestPayload = null) {
     const userMessage = requestPayload ? requestPayload.payload.label : userInput.value.trim();
 
     if (!userMessage && !requestPayload) return;
 
     if (!requestPayload) {
-        addMessage(userMessage, 'user'); // Display user message
-        userInput.value = ''; // Clear input field
+        addMessage(userMessage, 'user'); // Display user's message
+        userInput.value = ''; // Clear input
     }
 
     try {
@@ -59,15 +61,19 @@ async function sendMessage(requestPayload = null) {
 
         const data = await response.json();
 
+        if (!data || !Array.isArray(data)) {
+            throw new Error('Unexpected API response');
+        }
+
         data.forEach((responseItem) => {
-            if (responseItem.type === 'text') {
+            if (responseItem.type === 'text' && responseItem.payload) {
                 addMessage(responseItem.payload.message, 'bot');
-            } else if (responseItem.type === 'choice') {
+            } else if (responseItem.type === 'choice' && responseItem.payload.buttons) {
                 addChoices(responseItem.payload.buttons);
             }
         });
     } catch (error) {
-        console.error('Error connecting to backend:', error);
+        console.error('Error connecting to backend:', error.message);
         addMessage('Unable to connect to the backend.', 'bot');
     }
 }
@@ -83,6 +89,7 @@ sendButton.addEventListener('click', () => sendMessage());
 userInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') sendMessage();
 });
+
 
 // Particle Effect: Universe-like background
 const particlesContainer = document.querySelector('.particles');
