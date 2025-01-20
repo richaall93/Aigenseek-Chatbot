@@ -3,6 +3,7 @@ const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Replace with y
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
+const particlesContainer = document.querySelector('.particles'); // Ensure this exists in your HTML
 
 // Function to display messages
 function addMessage(content, sender) {
@@ -95,8 +96,17 @@ userInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') sendMessage();
 });
 
+// -------------------------------------------
 // Particle Effects: Create a Universe-like Effect
+// -------------------------------------------
+
+// Function to generate random particles
 function createParticles(count) {
+    if (!particlesContainer) {
+        console.error('Particle container not found in HTML.');
+        return;
+    }
+
     for (let i = 0; i < count; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
@@ -124,6 +134,4 @@ function createParticles(count) {
 }
 
 // Generate 100 particles
-if (particlesContainer) {
-    createParticles(100);
-}
+createParticles(100);
