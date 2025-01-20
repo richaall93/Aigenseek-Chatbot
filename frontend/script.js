@@ -1,4 +1,4 @@
-const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Deployed backend URL
+const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Replace with your backend URL
 
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
@@ -9,8 +9,9 @@ function addMessage(content, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender);
 
+    // Render hyperlinks if they exist
     if (content.includes('<a ')) {
-        messageDiv.innerHTML = content; // Render hyperlinks as HTML
+        messageDiv.innerHTML = content;
     } else {
         messageDiv.textContent = content;
     }
@@ -25,7 +26,7 @@ function addChoices(choices) {
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
-        const label = choice.payload?.label || choice.name;
+        const label = choice.payload?.label || choice.name; // Dynamically handle label/name
         if (!label) {
             console.error('Invalid choice structure:', choice);
             return;
@@ -33,7 +34,7 @@ function addChoices(choices) {
 
         const button = document.createElement('button');
         button.textContent = label;
-        button.addEventListener('click', () => sendMessage(choice)); // Pass choice as payload
+        button.addEventListener('click', () => sendMessage(choice.request)); // Send `request` payload
         choicesDiv.appendChild(button);
     });
 
@@ -43,16 +44,18 @@ function addChoices(choices) {
 
 // Function to send messages to the backend
 async function sendMessage(requestPayload = null) {
-    const userMessage = requestPayload ? requestPayload.payload.label : userInput.value.trim();
+    const userMessage = requestPayload ? requestPayload.payload?.label || requestPayload.name : userInput.value.trim();
 
     if (!userMessage && !requestPayload) return;
 
     if (!requestPayload) {
-        addMessage(userMessage, 'user');
+        addMessage(userMessage, 'user'); // Display user message
         userInput.value = ''; // Clear input field
     }
 
     try {
+        console.log('Sending payload:', requestPayload || { message: userMessage });
+
         const response = await fetch(`${BACKEND_URL}/voiceflow-interact`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -91,11 +94,43 @@ async function sendMessage(requestPayload = null) {
 
 // Initialize chatbot on page load
 window.onload = async () => {
+    console.log('Initializing chatbot...');
     await sendMessage({ payload: { label: 'launch' }, type: 'launch' });
 };
 
-// Event listeners
+// Event listeners for user interaction
 sendButton.addEventListener('click', () => sendMessage());
 userInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') sendMessage();
 });
+
+// Function to generate random particles
+function createParticles(count) {
+    for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+
+        // Randomize starting position, size, speed, and direction
+        const size = Math.random() * 5 + 3; // Particle size: 3px to 8px
+        const left = Math.random() * 100; // Random position on X-axis
+        const top = Math.random() * 100; // Random position on Y-axis
+        const duration = Math.random() * 20 + 15; // Animation duration: 15s to 35s
+        const dx = Math.random() * 2 - 1; // Random horizontal direction
+        const dy = Math.random() * 2 - 1; // Random vertical direction
+
+        // Apply styles
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${left}vw`;
+        particle.style.top = `${top}vh`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.setProperty('--dx', dx);
+        particle.style.setProperty('--dy', dy);
+
+        // Add particle to container
+        particlesContainer.appendChild(particle);
+    }
+}
+
+// Generate 100 particles
+createParticles(100);
