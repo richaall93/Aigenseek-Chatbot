@@ -1,17 +1,18 @@
-const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Replace with your backend URL
+const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Your backend URL
 
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
-const particlesContainer = document.querySelector('.particles'); // Ensure this exists in your HTML
-
-let isChatInitialized = false; // Prevent reinitializing the chatbot
 
 // Function to display messages
 function addMessage(content, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender);
-    messageDiv.innerHTML = content; // Render as HTML to handle links
+    if (content.includes('<a ')) {
+        messageDiv.innerHTML = content; // Render hyperlinks as HTML
+    } else {
+        messageDiv.textContent = content;
+    }
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
@@ -22,15 +23,11 @@ function addChoices(choices) {
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
-        const label = choice.payload?.label || choice.name;
-        if (!label || !choice.request) {
-            console.error('Invalid choice structure:', choice);
-            return;
-        }
-
         const button = document.createElement('button');
-        button.textContent = label;
-        button.addEventListener('click', () => sendMessage(choice.request)); // Pass the exact request
+        button.textContent = choice.payload.label; // Button label
+        button.addEventListener('click', () => {
+            sendMessage(choice);
+        }); // Send choice payload
         choicesDiv.appendChild(button);
     });
 
@@ -40,7 +37,7 @@ function addChoices(choices) {
 
 // Function to send messages to the backend
 async function sendMessage(requestPayload = null) {
-    const userMessage = requestPayload ? requestPayload.payload?.label || requestPayload.name : userInput.value.trim();
+    const userMessage = requestPayload ? requestPayload.payload.label : userInput.value.trim();
 
     if (!userMessage && !requestPayload) return;
 
@@ -50,8 +47,6 @@ async function sendMessage(requestPayload = null) {
     }
 
     try {
-        console.log('Sending payload:', requestPayload || { message: userMessage });
-
         const response = await fetch(`${BACKEND_URL}/voiceflow-interact`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -62,22 +57,13 @@ async function sendMessage(requestPayload = null) {
             }),
         });
 
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
         const data = await response.json();
-        console.log('API Response:', data);
-
-        // Clear existing choices to avoid duplicates
-        const existingChoices = document.querySelector('.choices');
-        if (existingChoices) existingChoices.remove();
 
         data.forEach((responseItem) => {
             if (responseItem.type === 'text') {
                 addMessage(responseItem.payload.message, 'bot');
             } else if (responseItem.type === 'choice') {
                 addChoices(responseItem.payload.buttons);
-            } else {
-                console.warn('Unhandled response type:', responseItem.type);
             }
         });
     } catch (error) {
@@ -88,43 +74,31 @@ async function sendMessage(requestPayload = null) {
 
 // Initialize chatbot on page load
 window.onload = async () => {
-    if (!isChatInitialized) {
-        console.log('Initializing chatbot...');
-        await sendMessage({ payload: { label: 'launch' }, type: 'launch' });
-        isChatInitialized = true;
-    }
+    addMessage('Initializing chatbot...', 'bot');
+    await sendMessage({ payload: { label: 'launch' }, type: 'launch' });
 };
 
-// Event listeners for user interaction
+// Event listeners
 sendButton.addEventListener('click', () => sendMessage());
 userInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') sendMessage();
 });
 
-// -------------------------------------------
-// Particle Effects: Create a Universe-like Effect
-// -------------------------------------------
+// Particle Effect: Universe-like background
+const particlesContainer = document.querySelector('.particles');
 
-// Function to generate random particles
 function createParticles(count) {
-    if (!particlesContainer) {
-        console.error('Particle container not found in HTML.');
-        return;
-    }
-
     for (let i = 0; i < count; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
 
-        // Randomize starting position, size, speed, and direction
-        const size = Math.random() * 5 + 3; // Particle size: 3px to 8px
-        const left = Math.random() * 100; // Random position on X-axis
-        const top = Math.random() * 100; // Random position on Y-axis
-        const duration = Math.random() * 20 + 15; // Animation duration: 15s to 35s
-        const dx = Math.random() * 2 - 1; // Random horizontal direction
-        const dy = Math.random() * 2 - 1; // Random vertical direction
+        const size = Math.random() * 5 + 3;
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const duration = Math.random() * 20 + 15;
+        const dx = Math.random() * 2 - 1;
+        const dy = Math.random() * 2 - 1;
 
-        // Apply styles
         particle.style.width = `${size}px`;
         particle.style.height = `${size}px`;
         particle.style.left = `${left}vw`;
@@ -133,10 +107,8 @@ function createParticles(count) {
         particle.style.setProperty('--dx', dx);
         particle.style.setProperty('--dy', dy);
 
-        // Add particle to container
         particlesContainer.appendChild(particle);
     }
 }
 
-// Generate 100 particles
 createParticles(100);
