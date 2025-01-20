@@ -3,19 +3,12 @@ const BACKEND_URL = 'https://backend-self-five-57.vercel.app'; // Replace with y
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
-const particlesContainer = document.querySelector('.particles'); // Ensure this exists in your HTML
 
 // Function to display messages
 function addMessage(content, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender);
-
-    if (content.includes('<a ')) {
-        messageDiv.innerHTML = content; // Render hyperlinks as HTML
-    } else {
-        messageDiv.textContent = content;
-    }
-
+    messageDiv.innerHTML = content; // Render as HTML to handle links
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
@@ -26,15 +19,15 @@ function addChoices(choices) {
     choicesDiv.classList.add('choices');
 
     choices.forEach((choice) => {
-        const label = choice.payload?.label || choice.name; // Handle label/name
-        if (!label) {
+        const label = choice.payload?.label || choice.name;
+        if (!label || !choice.request) {
             console.error('Invalid choice structure:', choice);
             return;
         }
 
         const button = document.createElement('button');
         button.textContent = label;
-        button.addEventListener('click', () => sendMessage(choice.request)); // Send `request` payload
+        button.addEventListener('click', () => sendMessage(choice.request)); // Pass the exact request
         choicesDiv.appendChild(button);
     });
 
@@ -66,9 +59,7 @@ async function sendMessage(requestPayload = null) {
             }),
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
         console.log('API Response:', data);
