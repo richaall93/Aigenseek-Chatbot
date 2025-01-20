@@ -5,6 +5,8 @@ const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
 const particlesContainer = document.querySelector('.particles'); // Ensure this exists in your HTML
 
+let isChatInitialized = false; // Prevent reinitializing the chatbot
+
 // Function to display messages
 function addMessage(content, sender) {
     const messageDiv = document.createElement('div');
@@ -86,8 +88,11 @@ async function sendMessage(requestPayload = null) {
 
 // Initialize chatbot on page load
 window.onload = async () => {
-    console.log('Initializing chatbot...');
-    await sendMessage({ payload: { label: 'launch' }, type: 'launch' });
+    if (!isChatInitialized) {
+        console.log('Initializing chatbot...');
+        await sendMessage({ payload: { label: 'launch' }, type: 'launch' });
+        isChatInitialized = true;
+    }
 };
 
 // Event listeners for user interaction
